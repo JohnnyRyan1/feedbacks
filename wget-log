@@ -1,0 +1,36 @@
+--2023-12-17 20:47:19--  https://goldsmr4.gesdisc.eosdis.nasa.gov/daac-bin/OTF/HTTP_services.cgi?FILENAME=%2Fdata%2FMERRA2%2FM2T1NXSLV.5.12.4%2F2022%2F07%2FMERRA2_400.tavg1_2d_slv_Nx.20220705.nc4&LABEL=MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc&SERVICE=L34RS_MERRA2&SHORTNAME=M2T1NXSLV&BBOX=58%2C-75%2C85%2C-10&FORMAT=bmM0Lw&VERSION=1.02&VARIABLES=T2M&DATASET_VERSION=5.12.4
+Resolving goldsmr4.gesdisc.eosdis.nasa.gov (goldsmr4.gesdisc.eosdis.nasa.gov)... 198.118.197.95
+Connecting to goldsmr4.gesdisc.eosdis.nasa.gov (goldsmr4.gesdisc.eosdis.nasa.gov)|198.118.197.95|:443... connected.
+HTTP request sent, awaiting response... Read error (Operation timed out) in headers.
+Retrying.
+
+--2023-12-18 11:20:02--  (try: 2)  https://goldsmr4.gesdisc.eosdis.nasa.gov/daac-bin/OTF/HTTP_services.cgi?FILENAME=%2Fdata%2FMERRA2%2FM2T1NXSLV.5.12.4%2F2022%2F07%2FMERRA2_400.tavg1_2d_slv_Nx.20220705.nc4&LABEL=MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc&SERVICE=L34RS_MERRA2&SHORTNAME=M2T1NXSLV&BBOX=58%2C-75%2C85%2C-10&FORMAT=bmM0Lw&VERSION=1.02&VARIABLES=T2M&DATASET_VERSION=5.12.4
+Connecting to goldsmr4.gesdisc.eosdis.nasa.gov (goldsmr4.gesdisc.eosdis.nasa.gov)|198.118.197.95|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+The destination name is too long (289), reducing to 236
+Location: https://urs.earthdata.nasa.gov/oauth/authorize/?scope=uid&app_type=401&client_id=e2WVk8Pw6weeLUKZYOxvTQ&response_type=code&redirect_uri=https%3A%2F%2Fgoldsmr4.gesdisc.eosdis.nasa.gov%2Fdata-redirect&state=aHR0cHM6Ly9nb2xkc21yNC5nZXNkaXNjLmVvc2Rpcy5uYXNhLmdvdi9kYWFjLWJpbi9PVEYvSFRUUF9zZXJ2aWNlcy5jZ2k%2FRklMRU5BTUU9JTJGZGF0YSUyRk1FUlJBMiUyRk0yVDFOWFNMVi41LjEyLjQlMkYyMDIyJTJGMDclMkZNRVJSQTJfNDAwLnRhdmcxXzJkX3Nsdl9OeC4yMDIyMDcwNS5uYzQmTEFCRUw9TUVSUkEyXzQwMC50YXZnMV8yZF9zbHZfTnguMjAyMjA3MDUuU1VCLm5jJlNFUlZJQ0U9TDM0UlNfTUVSUkEyJlNIT1JUTkFNRT1NMlQxTlhTTFYmQkJPWD01OCUyQy03NSUyQzg1JTJDLTEwJkZPUk1BVD1ibU0wTHcmVkVSU0lPTj0xLjAyJlZBUklBQkxFUz1UMk0mREFUQVNFVF9WRVJTSU9OPTUuMTIuNA [following]
+--2023-12-18 11:20:02--  https://urs.earthdata.nasa.gov/oauth/authorize/?scope=uid&app_type=401&client_id=e2WVk8Pw6weeLUKZYOxvTQ&response_type=code&redirect_uri=https%3A%2F%2Fgoldsmr4.gesdisc.eosdis.nasa.gov%2Fdata-redirect&state=aHR0cHM6Ly9nb2xkc21yNC5nZXNkaXNjLmVvc2Rpcy5uYXNhLmdvdi9kYWFjLWJpbi9PVEYvSFRUUF9zZXJ2aWNlcy5jZ2k%2FRklMRU5BTUU9JTJGZGF0YSUyRk1FUlJBMiUyRk0yVDFOWFNMVi41LjEyLjQlMkYyMDIyJTJGMDclMkZNRVJSQTJfNDAwLnRhdmcxXzJkX3Nsdl9OeC4yMDIyMDcwNS5uYzQmTEFCRUw9TUVSUkEyXzQwMC50YXZnMV8yZF9zbHZfTnguMjAyMjA3MDUuU1VCLm5jJlNFUlZJQ0U9TDM0UlNfTUVSUkEyJlNIT1JUTkFNRT1NMlQxTlhTTFYmQkJPWD01OCUyQy03NSUyQzg1JTJDLTEwJkZPUk1BVD1ibU0wTHcmVkVSU0lPTj0xLjAyJlZBUklBQkxFUz1UMk0mREFUQVNFVF9WRVJTSU9OPTUuMTIuNA
+Resolving urs.earthdata.nasa.gov (urs.earthdata.nasa.gov)... 2001:4d0:241a:4081::89, 198.118.243.33
+Connecting to urs.earthdata.nasa.gov (urs.earthdata.nasa.gov)|2001:4d0:241a:4081::89|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+The destination name is too long (634), reducing to 236
+Location: https://goldsmr4.gesdisc.eosdis.nasa.gov/data-redirect?code=BZcPKmJZeQFbkHDvDMOPNsJSMKj81Z-cn8O0AcogHJf1C23vCsdJCoWEdwJcwXsa0mVFmVRJnv2Kp30-IdXs&state=aHR0cHM6Ly9nb2xkc21yNC5nZXNkaXNjLmVvc2Rpcy5uYXNhLmdvdi9kYWFjLWJpbi9PVEYvSFRUUF9zZXJ2aWNlcy5jZ2k%2FRklMRU5BTUU9JTJGZGF0YSUyRk1FUlJBMiUyRk0yVDFOWFNMVi41LjEyLjQlMkYyMDIyJTJGMDclMkZNRVJSQTJfNDAwLnRhdmcxXzJkX3Nsdl9OeC4yMDIyMDcwNS5uYzQmTEFCRUw9TUVSUkEyXzQwMC50YXZnMV8yZF9zbHZfTnguMjAyMjA3MDUuU1VCLm5jJlNFUlZJQ0U9TDM0UlNfTUVSUkEyJlNIT1JUTkFNRT1NMlQxTlhTTFYmQkJPWD01OCUyQy03NSUyQzg1JTJDLTEwJkZPUk1BVD1ibU0wTHcmVkVSU0lPTj0xLjAyJlZBUklBQkxFUz1UMk0mREFUQVNFVF9WRVJTSU9OPTUuMTIuNA [following]
+--2023-12-18 11:20:03--  https://goldsmr4.gesdisc.eosdis.nasa.gov/data-redirect?code=BZcPKmJZeQFbkHDvDMOPNsJSMKj81Z-cn8O0AcogHJf1C23vCsdJCoWEdwJcwXsa0mVFmVRJnv2Kp30-IdXs&state=aHR0cHM6Ly9nb2xkc21yNC5nZXNkaXNjLmVvc2Rpcy5uYXNhLmdvdi9kYWFjLWJpbi9PVEYvSFRUUF9zZXJ2aWNlcy5jZ2k%2FRklMRU5BTUU9JTJGZGF0YSUyRk1FUlJBMiUyRk0yVDFOWFNMVi41LjEyLjQlMkYyMDIyJTJGMDclMkZNRVJSQTJfNDAwLnRhdmcxXzJkX3Nsdl9OeC4yMDIyMDcwNS5uYzQmTEFCRUw9TUVSUkEyXzQwMC50YXZnMV8yZF9zbHZfTnguMjAyMjA3MDUuU1VCLm5jJlNFUlZJQ0U9TDM0UlNfTUVSUkEyJlNIT1JUTkFNRT1NMlQxTlhTTFYmQkJPWD01OCUyQy03NSUyQzg1JTJDLTEwJkZPUk1BVD1ibU0wTHcmVkVSU0lPTj0xLjAyJlZBUklBQkxFUz1UMk0mREFUQVNFVF9WRVJTSU9OPTUuMTIuNA
+Connecting to goldsmr4.gesdisc.eosdis.nasa.gov (goldsmr4.gesdisc.eosdis.nasa.gov)|198.118.197.95|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+The destination name is too long (578), reducing to 236
+Location: https://goldsmr4.gesdisc.eosdis.nasa.gov/daac-bin/OTF/HTTP_services.cgi?FILENAME=%2Fdata%2FMERRA2%2FM2T1NXSLV.5.12.4%2F2022%2F07%2FMERRA2_400.tavg1_2d_slv_Nx.20220705.nc4&LABEL=MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc&SERVICE=L34RS_MERRA2&SHORTNAME=M2T1NXSLV&BBOX=58%2C-75%2C85%2C-10&FORMAT=bmM0Lw&VERSION=1.02&VARIABLES=T2M&DATASET_VERSION=5.12.4 [following]
+--2023-12-18 11:20:03--  https://goldsmr4.gesdisc.eosdis.nasa.gov/daac-bin/OTF/HTTP_services.cgi?FILENAME=%2Fdata%2FMERRA2%2FM2T1NXSLV.5.12.4%2F2022%2F07%2FMERRA2_400.tavg1_2d_slv_Nx.20220705.nc4&LABEL=MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc&SERVICE=L34RS_MERRA2&SHORTNAME=M2T1NXSLV&BBOX=58%2C-75%2C85%2C-10&FORMAT=bmM0Lw&VERSION=1.02&VARIABLES=T2M&DATASET_VERSION=5.12.4
+Connecting to goldsmr4.gesdisc.eosdis.nasa.gov (goldsmr4.gesdisc.eosdis.nasa.gov)|198.118.197.95|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 238485 (233K) [application/octet-stream]
+Saving to: ‘temp-files/MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc’
+
+     0K .......... .......... .......... .......... .......... 21%  313K 1s
+    50K .......... .......... .......... .......... .......... 42%  723K 0s
+   100K .......... .......... .......... .......... .......... 64% 11.1M 0s
+   150K .......... .......... .......... .......... .......... 85%  733K 0s
+   200K .......... .......... .......... ..                   100% 46.2M=0.3s
+
+2023-12-18 11:20:09 (771 KB/s) - ‘temp-files/MERRA2_400.tavg1_2d_slv_Nx.20220705.SUB.nc’ saved [238485/238485]
+
