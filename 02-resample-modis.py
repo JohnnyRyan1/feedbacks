@@ -15,7 +15,7 @@ import glob
 from pyresample import geometry, utils, image
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -28,7 +28,6 @@ ismip_1km = netCDF4.Dataset(path + '1km-ISMIP6.nc','r')
 
 # Define MODIS files
 modis_files = sorted(glob.glob(path + 'modis-albedo-intermediate/*.nc'))
-print('Number of files in folder = %.0f' %len(modis_files))
 
 # Define years
 years = np.arange(2002, 2024, 1)
@@ -43,7 +42,7 @@ for i in years:
             modis_list.append(f)
     
     # Define new master grid
-    master_grid_albedo = np.zeros((7200,7200,92), dtype='float')
+    master_grid_albedo = np.zeros((7200,7200,124), dtype='float')
     master_grid_lat = np.zeros((7200, 7200), dtype='float')
     master_grid_lon = np.zeros((7200, 7200), dtype='float')
 
@@ -51,47 +50,47 @@ for i in years:
     for j in modis_list:
         if j[-13:-8] == '15v00':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[0:2400,0:2400,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[0:2400,0:2400,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[0:2400,0:2400] = modis.variables['latitude'][:]
             master_grid_lon[0:2400,0:2400] = modis.variables['longitude'][:]
         if j[-13:-8] == '16v00':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[0:2400,2400:4800,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[0:2400,2400:4800,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[0:2400,2400:4800] = modis.variables['latitude'][:]
             master_grid_lon[0:2400,2400:4800] = modis.variables['longitude'][:]
         if j[-13:-8] == '17v00':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[0:2400,4800:7200,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[0:2400,4800:7200,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[0:2400,4800:7200] = modis.variables['latitude'][:]
             master_grid_lon[0:2400,4800:7200] = modis.variables['longitude'][:]
         if j[-13:-8] == '15v01':
-            modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[2400:4800,0:2400,:] = modis.variables['albedo'][:,:,0:92]
+            modis = netCDF4.Dataset(j, 'r')  
+            master_grid_albedo[2400:4800,0:2400,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[2400:4800,0:2400] = modis.variables['latitude'][:]
             master_grid_lon[2400:4800,0:2400] = modis.variables['longitude'][:]
         if j[-13:-8] == '16v01':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[2400:4800,2400:4800,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[2400:4800,2400:4800,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[2400:4800,2400:4800] = modis.variables['latitude'][:]
             master_grid_lon[2400:4800,2400:4800] = modis.variables['longitude'][:]
         if j[-13:-8] == '17v01':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[2400:4800,4800:7200,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[2400:4800,4800:7200,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[2400:4800,4800:7200] = modis.variables['latitude'][:]
             master_grid_lon[2400:4800,4800:7200] = modis.variables['longitude'][:]
         if j[-13:-8] == '15v02':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[4800:7200,0:2400,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[4800:7200,0:2400,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[4800:7200,0:2400] = modis.variables['latitude'][:]
             master_grid_lon[4800:7200,0:2400] = modis.variables['longitude'][:]
         if j[-13:-8] == '16v02':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[4800:7200,2400:4800,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[4800:7200,2400:4800,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[4800:7200,2400:4800] = modis.variables['latitude'][:]
             master_grid_lon[4800:7200,2400:4800] = modis.variables['longitude'][:]
         if j[-13:-8] == '17v02':
             modis = netCDF4.Dataset(j, 'r')
-            master_grid_albedo[4800:7200,4800:7200,:] = modis.variables['albedo'][:,:,0:92]
+            master_grid_albedo[4800:7200,4800:7200,:] = modis.variables['albedo'][:,:,0:124]
             master_grid_lat[4800:7200,4800:7200] = modis.variables['latitude'][:]
             master_grid_lon[4800:7200,4800:7200] = modis.variables['longitude'][:]
 

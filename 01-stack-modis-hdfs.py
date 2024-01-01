@@ -19,7 +19,7 @@ from pyproj import Proj
 #%%
 
 # Define user 
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/'
@@ -37,13 +37,13 @@ for file in modis_files:
     modis_tiles.append(os.path.basename(file)[18:23])
 
 tiles = np.unique(np.array(modis_tiles))
-years = np.arange(2022, 2024, 1)
+years = np.arange(2002, 2024, 1)
 
 tiles=['15v01','15v02','16v00', '16v01', '16v02', '17v00', '17v01', '17v02']
 
 #%%
 
-def save2netcdf(lats, lons, doy, data1, data2, data3, tile, year):
+def save2netcdf(lats, lons, doy, data1, data3, tile, year):
     dataset = netCDF4.Dataset(dest + 'MOD10A1_Albedo_' + tile + '_' + year + '.nc', 
                               'w', format='NETCDF4_CLASSIC')
     #print('Creating %s' %dest + 'MOD10A1_Albedo_' + tile + '_' + year + '.nc')
@@ -73,7 +73,7 @@ def save2netcdf(lats, lons, doy, data1, data2, data3, tile, year):
        
     # Create the actual 3D variable
     albedo = dataset.createVariable('albedo', np.int8, ('y','x','z'))
-    qa = dataset.createVariable('quality_flag', np.int8, ('y','x','z'))
+    #qa = dataset.createVariable('quality_flag', np.int8, ('y','x','z'))
     mask = dataset.createVariable('mask', np.int32, ('y','x'))
     day_of_year = dataset.createVariable('day_of_year', np.int16, ('z'))
     
@@ -87,7 +87,7 @@ def save2netcdf(lats, lons, doy, data1, data2, data3, tile, year):
     z[:] = doy
     day_of_year[:] = doy
     albedo[:] = data1
-    qa[:] = data2
+    #qa[:] = data2
     mask[:] = data3
 
     #print('Writing data to %s' %dest + 'MOD10A1_Albedo_' + tile + '_' + year + '.nc')
@@ -133,8 +133,9 @@ for i in tiles:
         # Get MODIS files
         modis_list_by_years = []
         for file in modis_list:
-            if (os.path.basename(file)[9:13] == str(p)) & (int(os.path.basename(file)[13:16]) > 151) &  (int(os.path.basename(file)[13:16]) < 244):
+            if (os.path.basename(file)[9:13] == str(p)) & (int(os.path.basename(file)[13:16]) > 133) &  (int(os.path.basename(file)[13:16]) < 259):
                 modis_list_by_years.append(file)
+        print(len(modis_list_by_years))
         
         #print('Processing year... %s' %str(p))
         if os.path.exists(dest + 'MOD10A1_Albedo_' + i + '_' + str(p) + '.nc'):
@@ -185,14 +186,12 @@ for i in tiles:
             
             # Count good values for each pixel for land mask
             data = np.dstack(snow_albedo_grid)
-            data[data == 125] = 1
             data[data > 100] = 0
             data[data < 0] = 0
             data_sum = np.sum(data, axis=2)
     
             # Concatenate array and save to netcdf
-            save2netcdf(lat, lon, doy, np.dstack(snow_albedo_grid), 
-                        np.dstack(quality_grid), data_sum, i, str(p))
+            save2netcdf(lat, lon, doy, data, data_sum, i, str(p))
             
             
             
