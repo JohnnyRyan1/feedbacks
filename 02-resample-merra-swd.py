@@ -111,8 +111,8 @@ for year in years:
     X.units = "degrees"
        
     # Create the actual 3D variable
-    allsky_swd_nc = dataset.createVariable('swd_allsky', np.int8, ('y','x','z'))
-    clrsky_swd_nc = dataset.createVariable('swd_clrsky', np.int8, ('y','x','z'))
+    allsky_swd_nc = dataset.createVariable('swd_allsky', np.float32, ('y','x','z'))
+    clrsky_swd_nc = dataset.createVariable('swd_clrsky', np.float32, ('y','x','z'))
 
     # Write data to layers
     Y[:] = ismip_1km['lat'].values

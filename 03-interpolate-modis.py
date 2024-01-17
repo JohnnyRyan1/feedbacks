@@ -20,7 +20,7 @@ import os
 #%%
 
 # Define user
-user = 'johnnyryan'
+user = 'jryan4'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -78,12 +78,12 @@ for i in range(random.shape[1]):
     # Optional plot export
     plt.scatter(modis['z'], point)
     plt.scatter(modis['z'], linear_interp)
+    plt.axvline(x=18, ls='dashed', color='k')
+    plt.axvline(x=110, ls='dashed', color='k')
     plt.savefig(path + 'filling-figures/plot_' + str(random[0,i]) + 
                 '_' + str(random[1,i]) + '.png')
     plt.close()
     
-    if np.sum(np.isfinite(np.array(linear_interp))) != 92:
-        break
 
 #%%
 
@@ -170,82 +170,86 @@ def save2netcdf(dest, file, lats, lons, filled_albedo, year):
 #%%
 
 for f in modis_files:
-
-    # Import MODIS data
-    mod = xr.open_dataset(f)
-    
-    # Split into 100 x 100
-    chunks = np.arange(0, 3000, 100)
-
-    # Create empty arrays for new data
-    new_data = np.zeros(mod['albedo'].shape).astype(np.int8)
     
     # Get path and filename seperately 
     infilepath, infilename = os.path.split(f) 
     # Get file name without extension            
     infileshortname, extension = os.path.splitext(infilename)
     
-    counts = []
+    if os.path.exists(dest + 'mod10a1-albedo-' + infileshortname[-4:] + '.nc'):
+        print('Skipping... %s' %(dest + 'mod10a1-albedo-' + infileshortname[-4:] + '.nc'))
+    else:
     
-    for i in range(len(chunks) - 1):
-        for j in range(len(chunks) - 1):           
-            # Define chunk mask
-            valid = mod['albedo'][chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]]
-            
-            if np.sum(valid) > 0:
-
-                #print('%.0f and %0.f and %.0f and %0.f' %(chunks[i],chunks[i+1],chunks[j],chunks[j+1]))
-                
-                array = mod['albedo'][chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]]
-
-                # Convert to float
-                array = array.astype(np.float32)
-                
-                # Replace zeros with NaNs
-                array = array.where(array != 0)
-                
-                # Perform filter (i.e. remove if two standard deviations from mean)
-                rolling_mean = array.rolling(z=11, min_periods=1, center=True).mean()
-                rolling_std = array.rolling(z=11, min_periods=1, center=True).std()
-                rolling_std = rolling_std * 2
-                
-                # Calculate difference between pixel value and rolling mean
-                difference = np.abs(array - rolling_mean)
-                
-                # Mask values that are more than two standard deviations from the mean
-                mask = (difference < rolling_std)
-                
-                # Calculate 11-day rolling median to be used as the timeseries
-                rolling_median = array.where(mask == True).rolling(z=11, min_periods=3, center=True).median()
-                
-                # Linearly interpolate between values
-                linear_interp = rolling_median.interpolate_na(dim="z", method="linear")
-                
-                # Add to new data array
-                new_data[chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]] = linear_interp.values
-                
-                # Compute number of filled values
-                counts.append((np.sum(np.isfinite(array.values)),
-                               np.sum(np.isfinite(array.values)) - np.sum(np.isfinite(array.where(mask == True).values)),
-                               np.sum(np.isfinite(linear_interp.values))))
-                               
-
-    # Save as NetCDF
-    save2netcdf(dest, f, mod['latitude'].values, mod['longitude'].values, 
-                new_data, infileshortname[-4:])
+        # Import MODIS data
+        mod = xr.open_dataset(f)
+        
+        # Split into 100 x 100
+        chunks = np.arange(0, 3000, 100)
     
-    # Save DataFrame
-    df = pd.DataFrame(counts, columns=['original', 'cut', 'interpolated'])
-    df.to_csv(path + 'filling-stats/' + infileshortname + '.csv')
+        # Create empty arrays for new data
+        new_data = np.zeros(mod['albedo'].shape).astype(np.int8)
+          
+        counts = []
+        
+        for i in range(len(chunks) - 1):
+            for j in range(len(chunks) - 1):           
+                # Define chunk mask
+                valid = mod['albedo'][chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]]
+                
+                if np.sum(valid) > 0:
     
-
+                    #print('%.0f and %0.f and %.0f and %0.f' %(chunks[i],chunks[i+1],chunks[j],chunks[j+1]))
+                    
+                    array = mod['albedo'][chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]]
+    
+                    # Convert to float
+                    array = array.astype(np.float32)
+                    
+                    # Replace zeros with NaNs
+                    array = array.where(array != 0)
+                    
+                    # Perform filter (i.e. remove if two standard deviations from mean)
+                    rolling_mean = array.rolling(z=11, min_periods=1, center=True).mean()
+                    rolling_std = array.rolling(z=11, min_periods=1, center=True).std()
+                    rolling_std = rolling_std * 2
+                    
+                    # Calculate difference between pixel value and rolling mean
+                    difference = np.abs(array - rolling_mean)
+                    
+                    # Mask values that are more than two standard deviations from the mean
+                    mask = (difference < rolling_std)
+                    
+                    # Calculate 11-day rolling median to be used as the timeseries
+                    rolling_median = array.where(mask == True).rolling(z=11, min_periods=3, center=True).median()
+                    
+                    # Linearly interpolate between values
+                    linear_interp = rolling_median.interpolate_na(dim="z", method="linear")
+                    
+                    # Add to new data array
+                    new_data[chunks[i]:chunks[i+1],chunks[j]:chunks[j+1]] = linear_interp.values
+                    
+                    # Compute number of filled values
+                    counts.append((np.sum(np.isfinite(array.values)),
+                                   np.sum(np.isfinite(array.values)) - np.sum(np.isfinite(array.where(mask == True).values)),
+                                   np.sum(np.isfinite(linear_interp.values))))
+                                   
+    
+        # Save as NetCDF
+        save2netcdf(dest, f, mod['latitude'].values, mod['longitude'].values, 
+                    new_data[:,:,18:110], infileshortname[-4:])
+        
+        # Save DataFrame
+        df = pd.DataFrame(counts, columns=['original', 'cut', 'interpolated'])
+        df.to_csv(path + 'filling-stats/' + infileshortname + '.csv')
+        
+    
 #%%
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
