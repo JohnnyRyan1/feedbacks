@@ -8,6 +8,7 @@ Calculate temperature and cloudiness for ice sheet + regions
 
 # Import modules
 import xarray as xr
+import netCDF4
 import numpy as np
 import pandas as pd
 import glob
@@ -23,6 +24,10 @@ path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/da
 
 # Import ISMIP 1 km grid
 ismip_1km = xr.open_dataset(path + '1km-ISMIP6-GIMP.nc')
+
+# Get ISMIP6 lat lons
+lon_1km = ismip_1km.variables['lon'][:]
+lat_1km = ismip_1km.variables['lat'][:]
 
 # Covert ISMIP to 50 km grid cells
 mask_50km = ndimage.zoom(ismip_1km['GIMP'].values, 0.02)
@@ -119,12 +124,70 @@ df_t2m.columns = ['1', '2', '3', '4', '5', '6', '7', '8']
 df_cloudiness.to_csv(path + 'regional-cloudiness.csv')
 df_t2m.to_csv(path + 'regional-t2m.csv')
 
+#%%
+
+"""
+Convert daily air temperatures to summer air temperatures
+
+"""
 
 
+# Define temperature files
+files = sorted(glob.glob(path + 'merra-t2m-resample/*'))
 
+t2m = np.zeros((2881,1681))
+for f in files:
+    t2m_data = xr.open_dataset(f)
+    t2m_is = np.nanmean(t2m_data['t2m'], axis=2)
+    t2m = np.dstack((t2m, t2m_is))
 
+t2m = t2m[:,:,1:]
 
+###############################################################################
+# Save 1 km dataset to NetCDF
+###############################################################################
+dataset = netCDF4.Dataset(path + 'final-temp-grids.nc', 
+                          'w', format='NETCDF4_CLASSIC')
+print('Creating %s' %path + 'final-temp-grids.nc')
+dataset.Title = "Summer air temperature from MERRA-2"
+import time
+dataset.History = "Created " + time.ctime(time.time())
+dataset.Projection = "WGS 84"
+dataset.Reference = "Ryan, J. C. et al. (unpublished)"
+dataset.Contact = "jryan4@uoregon.edu"
+    
+# Create new dimensions
+lat_dim = dataset.createDimension('y', t2m.shape[0])
+lon_dim = dataset.createDimension('x', t2m.shape[1])
+data_dim = dataset.createDimension('z', t2m.shape[2])
+    
+# Define variable types
+Y = dataset.createVariable('latitude', np.float32, ('y','x'))
+X = dataset.createVariable('longitude', np.float32, ('y','x'))
 
+y = dataset.createVariable('y', np.float32, ('y'))
+x = dataset.createVariable('x', np.float32, ('x'))
+z = dataset.createVariable('z', np.float32, ('z'))
+    
+# Define units
+Y.units = "degrees"
+X.units = "degrees"
+   
+# Create the actual 3D variable
+t2m_nc = dataset.createVariable('t2m', np.float32, ('y','x','z'))
+
+# Write data to layers
+Y[:] = lat_1km
+X[:] = lon_1km
+x[:] = lon_1km[0,:]
+y[:] = lat_1km[:,0]
+t2m_nc[:] = t2m.astype(np.float32)
+z[:] = np.arange(1,23)
+
+print('Writing data to %s' %path + 'final-temp-grids.nc')
+    
+# Close dataset
+dataset.close()
 
 
 
