@@ -17,7 +17,7 @@ from scipy import ndimage
 #%%
 
 # Define user
-user = 'johnnyryan'
+user = 'jryan4'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -189,7 +189,70 @@ print('Writing data to %s' %path + 'final-temp-grids.nc')
 # Close dataset
 dataset.close()
 
+#%%
 
+"""
+Convert SWD to mean summer values
+
+"""
+
+
+# Define temperature files
+files = sorted(glob.glob(path + 'merra-swd-resample/*'))
+
+swd = np.zeros((2881,1681))
+for f in files:
+    swd_data = xr.open_dataset(f)
+    swd_is = np.nanmean(swd_data['swd_allsky'], axis=2)
+    swd = np.dstack((swd, swd_is))
+
+swd = swd[:,:,1:]
+
+###############################################################################
+# Save 1 km dataset to NetCDF
+###############################################################################
+dataset = netCDF4.Dataset(path + 'final-swd-grids.nc', 
+                          'w', format='NETCDF4_CLASSIC')
+print('Creating %s' %path + 'final-swd-grids.nc')
+dataset.Title = "Summer SWD from MERRA-2"
+import time
+dataset.History = "Created " + time.ctime(time.time())
+dataset.Projection = "WGS 84"
+dataset.Reference = "Ryan, J. C. et al. (unpublished)"
+dataset.Contact = "jryan4@uoregon.edu"
+    
+# Create new dimensions
+lat_dim = dataset.createDimension('y', swd.shape[0])
+lon_dim = dataset.createDimension('x', swd.shape[1])
+data_dim = dataset.createDimension('z', swd.shape[2])
+    
+# Define variable types
+Y = dataset.createVariable('latitude', np.float32, ('y','x'))
+X = dataset.createVariable('longitude', np.float32, ('y','x'))
+
+y = dataset.createVariable('y', np.float32, ('y'))
+x = dataset.createVariable('x', np.float32, ('x'))
+z = dataset.createVariable('z', np.float32, ('z'))
+    
+# Define units
+Y.units = "degrees"
+X.units = "degrees"
+   
+# Create the actual 3D variable
+swd_nc = dataset.createVariable('swd', np.float32, ('y','x','z'))
+
+# Write data to layers
+Y[:] = lat_1km
+X[:] = lon_1km
+x[:] = lon_1km[0,:]
+y[:] = lat_1km[:,0]
+swd_nc[:] = swd.astype(np.float32)
+z[:] = np.arange(1,23)
+
+print('Writing data to %s' %path + 'final-swd-grids.nc')
+    
+# Close dataset
+dataset.close()
 
 
 

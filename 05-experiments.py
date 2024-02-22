@@ -113,7 +113,7 @@ mask3d = np.repeat(mask[:,:,np.newaxis], 92, axis=2)
 
 exp1, exp2, exp3, exp4, exp5 = [], [], [], [], []
 ice_diff, snow_diff, snowline_diff = np.zeros(mask.shape), np.zeros(mask.shape), np.zeros(mask.shape)
-bulk_diff = np.zeros(mask.shape)
+bulk_diff, bulk_swnet = np.zeros(mask.shape), np.zeros(mask.shape)
 
 for i, j in itertools.product(ice_threshold, uncertainty):
 
@@ -232,6 +232,7 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         snow_diff = np.dstack((snow_diff, swnet_mean - swnet_fixed_snow_mean))
         snowline_diff = np.dstack((snowline_diff, swnet_fixed_both_mean - swnet_fixed_all_mean))
         bulk_diff = np.dstack((bulk_diff, swnet_mean - swnet_fixed_all_mean))
+        bulk_swnet = np.dstack((bulk_swnet, swnet_mean))
         
 ###############################################################################
 # Make DataFrame
@@ -262,14 +263,14 @@ df['snow_forcing'] = df['observed_albedo'] - df['fixed_snow']
 df['snowline_forcing'] = df['fixed_snow_ice'] - df['fixed_snow_all']
 
 # Save as csv
-df.to_csv(path + 'positive_forcing_results.csv')
+df.to_csv(path + 'positive-forcing-results.csv')
 
-#%%
 # Remove first layer
 snowline_diff = snowline_diff[:,:,1:]
 ice_diff = ice_diff[:,:,1:]
 snow_diff = snow_diff[:,:,1:]
 bulk_diff = bulk_diff[:,:,1:]
+bulk_swnet = bulk_swnet[:,:,1:]
 
 # Save grids as NetCDF
 lats, lons = modis['latitude'].values, modis['longitude'].values
@@ -310,7 +311,7 @@ snowline_nc = dataset.createVariable('snowline', np.int8, ('y','x','z'))
 snow_nc = dataset.createVariable('snow', np.int8, ('y','x','z'))
 ice_nc = dataset.createVariable('ice', np.int8, ('y','x','z'))
 bulk_nc = dataset.createVariable('bulk', np.int8, ('y','x','z'))
-
+swnet_nc = dataset.createVariable('swnet', np.int16, ('y','x','z'))
 
 # Write data to layers
 Y[:] = lats
@@ -321,6 +322,7 @@ snowline_nc[:] = snowline_diff.astype(np.int8)
 snow_nc[:] = snow_diff.astype(np.int8)
 ice_nc[:] = ice_diff.astype(np.int8)
 bulk_nc[:] = bulk_diff.astype(np.int8)
+swnet_nc[:] = bulk_swnet.astype(np.int16)
 z[:] = np.arange(1,23)
 
 print('Writing data to %s' % path + 'final-forcing-grids.nc')
