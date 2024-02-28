@@ -31,6 +31,9 @@ modis_files = sorted(glob.glob(path + 'modis-albedo-complete/*.nc'))
 # Define MERRA files
 merra_files = sorted(glob.glob(path + 'merra-swd-resample/*.nc'))
 
+# Define MERRA climatology
+m = xr.open_dataset(path + 'swd-climatology.nc')
+
 #%%
 
 # Define ice threshold
@@ -109,11 +112,13 @@ mask[(nan_df['x'].values, nan_df['y'].values)] = False
 # Define 3D mask
 mask3d = np.repeat(mask[:,:,np.newaxis], 92, axis=2)
 
+
 #%%
 
-exp1, exp2, exp3, exp4, exp5 = [], [], [], [], []
+exp1, exp2, exp3, exp4, exp5, exp6, exp7 = [], [], [], [], [], [], []
 ice_diff, snow_diff, snowline_diff = np.zeros(mask.shape), np.zeros(mask.shape), np.zeros(mask.shape)
-bulk_diff, bulk_swnet = np.zeros(mask.shape), np.zeros(mask.shape)
+bulk_diff, bulk_swnet, bulk_cloud = np.zeros(mask.shape), np.zeros(mask.shape), np.zeros(mask.shape)
+bulk_no_cloud = np.zeros(mask.shape)
 
 for i, j in itertools.product(ice_threshold, uncertainty):
 
@@ -148,11 +153,25 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         observed = observed + j
     
         # Compute SWnet
-        swnet = (1 - (observed / 100)) * merra['swd_allsky']
+        swnet = (1 - (observed / 100)) * m['swd_climatology']
         swnet_mean = np.nanmean(swnet.values, axis=2)
 
         # Mask ice sheet
         swnet_mean[mask == 0] = np.nan
+        
+        # Compute SWnet with observed clouds
+        swnet_cloud = (1 - (observed / 100)) * merra['swd_allsky']
+        swnet_mean_cloud = np.nanmean(swnet_cloud.values, axis=2)
+
+        # Mask ice sheet
+        swnet_mean_cloud[mask == 0] = np.nan
+        
+        # Compute SWnet with no clouds
+        swnet_nocloud = (1 - (observed / 100)) * merra['swd_clrsky']
+        swnet_mean_nocloud = np.nanmean(swnet_nocloud.values, axis=2)
+
+        # Mask ice sheet
+        swnet_mean_nocloud[mask == 0] = np.nan
         
         #######################################################################
         # Fix snow albedo
@@ -167,7 +186,7 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         fix_snow[classified == 1] = fix_snow[classified == 1] + j
         
         # Compute SWnet
-        swnet_fixed_snow = (1 - (fix_snow / 100)) * merra['swd_allsky']
+        swnet_fixed_snow = (1 - (fix_snow / 100)) * m['swd_climatology']
         swnet_fixed_snow_mean = np.nanmean(swnet_fixed_snow.values, axis=2)
                                 
         # Mask ice sheet
@@ -183,7 +202,7 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         fix_ice[classified == 2] = fix_ice[classified == 2] + j
         
         # Compute SWnet
-        swnet_fixed_ice = (1 - (fix_ice / 100)) * merra['swd_allsky']
+        swnet_fixed_ice = (1 - (fix_ice / 100)) * m['swd_climatology']
         swnet_fixed_ice_mean = np.nanmean(swnet_fixed_ice.values, axis=2)
                                 
         # Mask ice sheet
@@ -199,7 +218,7 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         fix_both[classified == 2] = 83 + j
         
         # Compute SWnet
-        swnet_fixed_both = (1 - (fix_both / 100)) * merra['swd_allsky']
+        swnet_fixed_both = (1 - (fix_both / 100)) * m['swd_climatology']
         swnet_fixed_both_mean = np.nanmean(swnet_fixed_both.values, axis=2)
                                 
         # Mask ice sheet
@@ -214,7 +233,7 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         fix_all[classified > 0] = 83 + j
         
         # Compute SWnet
-        swnet_fixed_all = (1 - (fix_all / 100)) * merra['swd_allsky']
+        swnet_fixed_all = (1 - (fix_all / 100)) * m['swd_climatology']
         swnet_fixed_all_mean = np.nanmean(swnet_fixed_all.values, axis=2)
         
         # Mask ice sheet
@@ -226,6 +245,9 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         exp3.append(np.nansum(swnet_fixed_both_mean))
         exp4.append(np.nansum(swnet_fixed_ice_mean))
         exp5.append(np.nansum(swnet_fixed_snow_mean))
+        exp6.append(np.nansum(swnet_mean_cloud))
+        exp7.append(np.nansum(swnet_mean_nocloud))
+
         
         # Append to grids
         ice_diff = np.dstack((ice_diff, swnet_mean - swnet_fixed_ice_mean))
@@ -233,16 +255,18 @@ for i, j in itertools.product(ice_threshold, uncertainty):
         snowline_diff = np.dstack((snowline_diff, swnet_fixed_both_mean - swnet_fixed_all_mean))
         bulk_diff = np.dstack((bulk_diff, swnet_mean - swnet_fixed_all_mean))
         bulk_swnet = np.dstack((bulk_swnet, swnet_mean))
+        bulk_cloud = np.dstack((bulk_cloud, swnet_mean_cloud))
+        bulk_no_cloud = np.dstack((bulk_no_cloud, swnet_mean_nocloud))
         
 ###############################################################################
 # Make DataFrame
 ###############################################################################
 
 # Make DataFrame
-df = pd.DataFrame(list(zip(exp1, exp2, exp3, exp4, exp5)))
+df = pd.DataFrame(list(zip(exp1, exp2, exp3, exp4, exp5, exp6, exp7)))
 
 df.columns = ['fixed_snow_all', 'observed_albedo', 'fixed_snow_ice', 
-              'fixed_ice', 'fixed_snow']
+              'fixed_ice', 'fixed_snow', 'observed_cloud', 'no_cloud']
 
 # Divide by area
 df = df / np.sum(mask == 1)
@@ -271,6 +295,8 @@ ice_diff = ice_diff[:,:,1:]
 snow_diff = snow_diff[:,:,1:]
 bulk_diff = bulk_diff[:,:,1:]
 bulk_swnet = bulk_swnet[:,:,1:]
+bulk_cloud = bulk_cloud[:,:,1:]
+bulk_no_cloud = bulk_no_cloud[:,:,1:]
 
 # Save grids as NetCDF
 lats, lons = modis['latitude'].values, modis['longitude'].values
@@ -281,7 +307,7 @@ lats, lons = modis['latitude'].values, modis['longitude'].values
    
 dataset = netCDF4.Dataset(path + 'final-forcing-grids.nc', 'w', format='NETCDF4_CLASSIC')
 print('Creating %s' % path + 'final-forcing-grids.nc')
-dataset.Title = "Gridded positive radiative forcings"
+dataset.Title = "Gridded radiative forcings"
 import time
 dataset.History = "Created " + time.ctime(time.time())
 dataset.Projection = "WGS 84"
@@ -312,6 +338,8 @@ snow_nc = dataset.createVariable('snow', np.int8, ('y','x','z'))
 ice_nc = dataset.createVariable('ice', np.int8, ('y','x','z'))
 bulk_nc = dataset.createVariable('bulk', np.int8, ('y','x','z'))
 swnet_nc = dataset.createVariable('swnet', np.int16, ('y','x','z'))
+cloud_nc = dataset.createVariable('swnet_cloud', np.int16, ('y','x','z'))
+no_cloud_nc = dataset.createVariable('swnet_no_cloud', np.int16, ('y','x','z'))
 
 # Write data to layers
 Y[:] = lats
@@ -323,6 +351,8 @@ snow_nc[:] = snow_diff.astype(np.int8)
 ice_nc[:] = ice_diff.astype(np.int8)
 bulk_nc[:] = bulk_diff.astype(np.int8)
 swnet_nc[:] = bulk_swnet.astype(np.int16)
+cloud_nc[:] = bulk_cloud.astype(np.int16)
+no_cloud_nc[:] = bulk_no_cloud.astype(np.int16)
 z[:] = np.arange(1,23)
 
 print('Writing data to %s' % path + 'final-forcing-grids.nc')

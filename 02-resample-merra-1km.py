@@ -121,6 +121,95 @@ for year in years:
 
 #%%
 
+# Produce SWD climatology
+
+swd_climatology = np.zeros((55,105,1))
+
+# Produce SWD climatology
+for i in range(92):
+    print(i)
+    swd_clim = np.zeros((55,105,1))
+    
+    for year in years:
+        
+        # Read files
+        merra_swd = xr.open_dataset(path + 'merra-swd/swd_'  + str(year) + '.nc')
+    
+        # Stack 
+        swd_clim = np.dstack((swd_clim, np.rollaxis(merra_swd['swd_allsky'].values, 0, 3)[:,:,i]))
+    
+    # Remove first layer
+    swd_clim = swd_clim[:,:,1:]
+    
+    # Stack to main climatology
+    swd_climatology = np.dstack((swd_climatology, np.nanmean(swd_clim, axis=2)))
+
+# Remove first layer
+swd_climatology = swd_climatology[:,:,1:]
+
+# Extract lat/lon
+merra_lon, merra_lat = np.meshgrid(merra_swd['longitude'].values, merra_swd['latitude'].values)
+
+# Define source projection
+source_def = geometry.SwathDefinition(lons=merra_lon, lats=merra_lat)
+    
+# Reproject
+swd_climatology_resample = kd_tree.resample_nearest(source_def, 
+                               swd_climatology, 
+                               target_def, 
+                               radius_of_influence=50000)
+
+# Convert zeros to nans
+swd_climatology_resample[swd_climatology_resample == 0] = np.nan
+
+###############################################################################
+# Save 1 km dataset to NetCDF
+###############################################################################
+dataset = netCDF4.Dataset(path + 'swd-climatology.nc', 
+                          'w', format='NETCDF4_CLASSIC')
+print('Creating %s' %path + 'swd-climatology.nc')
+dataset.Title = "Climatology of daily downward allsky shortwave radiation for 2002-2023 period from MERRA-2"
+import time
+dataset.History = "Created " + time.ctime(time.time())
+dataset.Projection = "WGS 84"
+dataset.Reference = "Ryan, J. C. et al. (unpublished)"
+dataset.Contact = "jryan4@uoregon.edu"
+    
+# Create new dimensions
+lat_dim = dataset.createDimension('y', swd_climatology_resample.shape[0])
+lon_dim = dataset.createDimension('x', swd_climatology_resample.shape[1])
+data_dim = dataset.createDimension('z', swd_climatology_resample.shape[2])
+
+    
+# Define variable types
+Y = dataset.createVariable('latitude', np.float32, ('y','x'))
+X = dataset.createVariable('longitude', np.float32, ('y','x'))
+
+y = dataset.createVariable('y', np.float32, ('y'))
+x = dataset.createVariable('x', np.float32, ('x'))
+z = dataset.createVariable('z', np.float32, ('z'))
+    
+# Define units
+Y.units = "degrees"
+X.units = "degrees"
+   
+# Create the actual 3D variable
+allsky_swd_nc = dataset.createVariable('swd_climatology', np.float32, ('y','x','z'))
+
+# Write data to layers
+Y[:] = ismip_1km['lat'].values
+X[:] = ismip_1km['lon'].values
+y[:] = ismip_1km['lat'].values[:,0]
+x[:] = ismip_1km['lon'].values[0,:]
+allsky_swd_nc[:] = swd_climatology_resample.astype(np.float32)
+z[:] = np.arange(1,93)
+
+print('Writing data to %s' %path + 'swd-climatology.nc')
+    
+# Close dataset
+dataset.close()
+
+#%%
 
 """
 Resample MERRA-2 surface air temperature

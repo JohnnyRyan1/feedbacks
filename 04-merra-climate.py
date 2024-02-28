@@ -196,17 +196,21 @@ Convert SWD to mean summer values
 
 """
 
-
 # Define temperature files
 files = sorted(glob.glob(path + 'merra-swd-resample/*'))
 
-swd = np.zeros((2881,1681))
+swd_all = np.zeros((2881,1681))
+swd_clr = np.zeros((2881,1681))
+
 for f in files:
     swd_data = xr.open_dataset(f)
-    swd_is = np.nanmean(swd_data['swd_allsky'], axis=2)
-    swd = np.dstack((swd, swd_is))
+    swd__all_is = np.nanmean(swd_data['swd_allsky'], axis=2)
+    swd_all = np.dstack((swd_all, swd__all_is))
+    swd__clr_is = np.nanmean(swd_data['swd_clrsky'], axis=2)
+    swd_clr = np.dstack((swd_clr, swd__clr_is))
 
-swd = swd[:,:,1:]
+swd_all = swd_all[:,:,1:]
+swd_clr = swd_clr[:,:,1:]
 
 ###############################################################################
 # Save 1 km dataset to NetCDF
@@ -222,9 +226,9 @@ dataset.Reference = "Ryan, J. C. et al. (unpublished)"
 dataset.Contact = "jryan4@uoregon.edu"
     
 # Create new dimensions
-lat_dim = dataset.createDimension('y', swd.shape[0])
-lon_dim = dataset.createDimension('x', swd.shape[1])
-data_dim = dataset.createDimension('z', swd.shape[2])
+lat_dim = dataset.createDimension('y', swd_all.shape[0])
+lon_dim = dataset.createDimension('x', swd_all.shape[1])
+data_dim = dataset.createDimension('z', swd_all.shape[2])
     
 # Define variable types
 Y = dataset.createVariable('latitude', np.float32, ('y','x'))
@@ -239,14 +243,16 @@ Y.units = "degrees"
 X.units = "degrees"
    
 # Create the actual 3D variable
-swd_nc = dataset.createVariable('swd', np.float32, ('y','x','z'))
+swd_all_nc = dataset.createVariable('swd_all', np.float32, ('y','x','z'))
+swd_clr_nc = dataset.createVariable('swd_clr', np.float32, ('y','x','z'))
 
 # Write data to layers
 Y[:] = lat_1km
 X[:] = lon_1km
 x[:] = lon_1km[0,:]
 y[:] = lat_1km[:,0]
-swd_nc[:] = swd.astype(np.float32)
+swd_all_nc[:] = swd_all.astype(np.float32)
+swd_clr_nc[:] = swd_clr.astype(np.float32)
 z[:] = np.arange(1,23)
 
 print('Writing data to %s' %path + 'final-swd-grids.nc')
