@@ -3,7 +3,7 @@
 # Configure your username and password for authentication using a .netrc file
 cd ~
 touch .netrc
-echo "machine urs.earthdata.nasa.gov login johnnyryan password Northbar39" >> .netrc
+echo "machine urs.earthdata.nasa.gov login johnnyryan1607 password Elephant12#!" >> .netrc
 chmod 0600 .netrc
 
 # Create a cookie file
@@ -11,4 +11,4 @@ cd ~
 touch .urs_cookies
 
 # Use a WGET command to download your data.
-wget -nc --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --keep-session-cookies --no-check-certificate --auth-no-challenge=on -r --reject "index.html*" -np -e robots=off -i /Users/johnnyryan/Dropbox\ \(University\ of\ Oregon\)/research/feedbacks/data/links/h17v02.txt --directory-prefix=/Users/johnnyryan/Dropbox\ \(University\ of\ Oregon\)/research/feedbacks/data/mod10a1/ -nd
+wget -nc --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --keep-session-cookies --no-check-certificate --auth-no-challenge=on -r --reject "index.html*" -np -e robots=off -i /Users/jryan4/Dropbox\ \(University\ of\ Oregon\)/research/antarctica/data/links/3964461709-download.txt --directory-prefix=/Users/jryan4/Dropbox\ \(University\ of\ Oregon\)/research/antarctica/data/mod10a2 -nd

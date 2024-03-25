@@ -19,15 +19,12 @@ user = 'jryan4'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
-alt_path = '/Users/' + user + '/Dropbox (University of Oregon)/published/clouds/data/'
 
 # Import ISMIP 1 km grid
 ismip_1km = xr.open_dataset(path + '1km-ISMIP6-GIMP.nc')
 
 # Define MODIS files
-modis_files = sorted(glob.glob(path + 'modis-albedo-complete/*.nc'))
-cloud_lw_files = sorted(glob.glob(alt_path + 'myd06_radiative_flux/*_LW_*.nc'))
-cloud_sw_files = sorted(glob.glob(alt_path + 'myd06_radiative_flux/*_SW_*.nc'))
+modis_files = sorted(glob.glob(path + 'modis-albedo-final/*.nc'))
 
 # Define years
 years = np.arange(2002, 2024, 1)
@@ -44,7 +41,7 @@ for i in range(92):
     for year in years:
         
         # Read files
-        modis = xr.open_dataset(path + 'modis-albedo-complete/mod10a1-albedo-'  + str(year) + '.nc')
+        modis = xr.open_dataset(path + 'modis-albedo-final/mod10a1-albedo-'  + str(year) + '.nc')
     
         # Stack 
         clim = np.dstack((clim, modis['albedo'][:,:,i].values))

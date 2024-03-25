@@ -13,7 +13,7 @@ import pandas as pd
 #%%
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -23,41 +23,33 @@ savepath = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedback
 
 # Imoport data
 pos = pd.read_csv(path + 'positive-forcing-results.csv')
-clim = pd.read_csv(path + 'ice-sheet-climate.csv')
-
-
-#%%
-
-# Melt-albedo feedbacks increase SWnet by...
-total_albedo = (pos['observed_albedo'] - pos['fixed_snow_all']) / pos['fixed_snow_all']
 
 #%%
 
 # Mean observed SWnet for the entire ice sheet between 2002-2023 
-print(pos['observed_albedo'].mean())
+print(pos['observed_albedo'].mean(), '+/-', pos['observed_albedo'].std())
+
 
 # Mean SWnet for ice sheet with 0.83 albedo between 2002-2023 
-print(pos['fixed_snow_all'].mean())
+print(pos['fixed_snow_all'].mean(), '+/-', pos['fixed_snow_all'].std())
 
 # Contribution of surface albedo change to SWnet
-print(total_albedo.mean())
+print(((pos['observed_albedo'] - pos['fixed_snow_all']) / pos['fixed_snow_all']).mean())
+print(((pos['observed_albedo'] - pos['fixed_snow_all']) / pos['fixed_snow_all']).std())
 
 # Radiative forcing due to snowline fluctuations
-print(pos['snowline_forcing'].mean())
+print(pos['snowline_forcing'].mean(), '+/-', pos['snowline_forcing'].std())
 
 # Radiative forcing due to snow albedo change
-print(pos['snow_forcing'].mean())
+print(pos['snow_forcing'].mean(), '+/-', pos['snow_forcing'].std())
 
 # Radiative forcing due to ice albedo change
-print(pos['ice_forcing'].mean())
+print(pos['ice_forcing'].mean(), '+/-', pos['ice_forcing'].std())
 
 # Contribution of surface albedo to SWnet
 print(pos['observed_albedo'].mean() - pos['fixed_snow_all'].mean())
 
 #%%
-
-# Radiative forcing if there were no clouds
-print((pos['no_cloud'] - pos['observed_albedo']).mean())
 
 
 

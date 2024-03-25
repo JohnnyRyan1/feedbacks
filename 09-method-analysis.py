@@ -10,11 +10,9 @@ DESCRIPTION
 
 # Import packages
 import xarray as xr
-import numpy as np
 import pandas as pd
 import glob
 import matplotlib.pyplot as plt
-import os
 
 """
 Note that there are 125 values for each grid cell in the interpolated grids but
@@ -31,7 +29,7 @@ user = 'jryan4'
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
 
 # Define files
-files = sorted(glob.glob(path + 'filling-stats/*'))
+files = sorted(glob.glob(path + 'filling-stats/*20*'))
 
 # Import ISMIP 1 km grid
 ismip_1km = xr.open_dataset(path + '1km-ISMIP6-GIMP.nc')

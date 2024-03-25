@@ -13,10 +13,6 @@ import numpy as np
 from scipy import stats
 import pandas as pd
 
-"""
-NOTE: Can only compute feedback strength for snow over pixels that were always snow during the 
-study period.
-"""
 #%%
 
 # Define user
@@ -24,6 +20,7 @@ user = 'jryan4'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
+alt_path = '/Users/' + user + '/Dropbox (University of Oregon)/published/clouds/data/'
 savepath = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/figures/'
 
 # Import ISMIP 1 km grid
@@ -36,17 +33,23 @@ coeffs = pd.read_csv(path + 'watts-to-runoff-coeffs.csv')
 #%%
 
 # Import data
-data = xr.open_dataset(path + 'final-forcing-grids.nc')
-t2m = xr.open_dataset(path + 'final-temp-grids.nc')
-swd = xr.open_dataset(path + 'final-swd-grids.nc')
-snow_mask = xr.open_dataset(path + 'snow-mask.nc')
-cloud = xr.open_dataset(path +'final-cloud-forcing-grids.nc')
+surface = xr.open_dataset(path + 'final-surface-forcing-grids.nc')
+cloud = xr.open_dataset(path + 'final-cloud-forcing-grids.nc')
+t2m_lwd_swd = xr.open_dataset(path + 'allwave-t2m-downscaled.nc')
 
 # Compute anomalies
-data['swnet_anom'] = data['swnet'] - data['swnet'].mean(dim='z')
-t2m['t2m_anom'] = t2m['t2m'] - t2m['t2m'].mean(dim='z')
-swd['cre'] = cloud['swnet_no_cloud'] - cloud['swnet_cloud']
-swd['cre_anom'] = swd['cre'] - swd['cre'].mean(dim='z')
+surface['swnet_anom'] = surface['swnet'] - surface['swnet'].mean(dim='z')
+
+cloud['swnet_diff'] = cloud['swnet_cloud'] - cloud['swnet_no_cloud']
+cloud['swnet_anom'] = cloud['swnet_diff'] - cloud['swnet_diff'].mean(dim='z')
+
+t2m_lwd_swd['t2m_anom'] = t2m_lwd_swd['t2m'] - t2m_lwd_swd['t2m'].mean(dim='z')
+
+t2m_lwd_swd['lwd'] = t2m_lwd_swd['lwd_allsky'] - t2m_lwd_swd['lwd_clrsky']
+t2m_lwd_swd['lwd_anom'] = t2m_lwd_swd['lwd'] - t2m_lwd_swd['lwd'].mean(dim='z')
+
+t2m_lwd_swd['net'] = t2m_lwd_swd['lwd'] + cloud['swnet_diff']
+t2m_lwd_swd['net_anom'] = t2m_lwd_swd['net'] - t2m_lwd_swd['net'].mean(dim='z')
 
 #%%
 # Define some functions
@@ -60,8 +63,8 @@ def new_linregress(x, y):
 ###############################################################################
 # Compute linear relationship between radiative forcing and air temperature for every pixel
 ###############################################################################
-xr_stats_temp = xr.apply_ufunc(new_linregress, t2m['t2m_anom'], 
-                          data['swnet_anom'],
+xr_stats_surf = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          surface['swnet_anom'],
                           input_core_dims=[['z'], ['z']],
                           output_core_dims=[["parameter"]],
                           vectorize=True,
@@ -69,8 +72,8 @@ xr_stats_temp = xr.apply_ufunc(new_linregress, t2m['t2m_anom'],
                           output_dtypes=['float64'],
                           output_sizes={"parameter": 5})
 
-xr_stats_cloud = xr.apply_ufunc(new_linregress, t2m['t2m_anom'], 
-                          swd['cre_anom'],
+xr_stats_sw = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          cloud['swnet_anom'],
                           input_core_dims=[['z'], ['z']],
                           output_core_dims=[["parameter"]],
                           vectorize=True,
@@ -79,8 +82,8 @@ xr_stats_cloud = xr.apply_ufunc(new_linregress, t2m['t2m_anom'],
                           output_sizes={"parameter": 5})
 
 
-xr_stats_snowline = xr.apply_ufunc(new_linregress, t2m['t2m_anom'], 
-                          data['snowline'],
+xr_stats_lw = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          t2m_lwd_swd['lwd_anom'],
                           input_core_dims=[['z'], ['z']],
                           output_core_dims=[["parameter"]],
                           vectorize=True,
@@ -88,8 +91,9 @@ xr_stats_snowline = xr.apply_ufunc(new_linregress, t2m['t2m_anom'],
                           output_dtypes=['float64'],
                           output_sizes={"parameter": 5})
 
-xr_stats_snow = xr.apply_ufunc(new_linregress, t2m['t2m_anom'], 
-                          data['snow'],
+
+xr_stats_net = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          t2m_lwd_swd['net_anom'],
                           input_core_dims=[['z'], ['z']],
                           output_core_dims=[["parameter"]],
                           vectorize=True,
@@ -97,8 +101,27 @@ xr_stats_snow = xr.apply_ufunc(new_linregress, t2m['t2m_anom'],
                           output_dtypes=['float64'],
                           output_sizes={"parameter": 5})
 
-xr_stats_ice = xr.apply_ufunc(new_linregress, t2m['t2m_anom'], 
-                          data['ice'],
+#%%
+xr_stats_snowline = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          surface['snowline'],
+                          input_core_dims=[['z'], ['z']],
+                          output_core_dims=[["parameter"]],
+                          vectorize=True,
+                          dask="parallelized",
+                          output_dtypes=['float64'],
+                          output_sizes={"parameter": 5})
+
+xr_stats_snow = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          surface['snow'],
+                          input_core_dims=[['z'], ['z']],
+                          output_core_dims=[["parameter"]],
+                          vectorize=True,
+                          dask="parallelized",
+                          output_dtypes=['float64'],
+                          output_sizes={"parameter": 5})
+
+xr_stats_ice = xr.apply_ufunc(new_linregress, t2m_lwd_swd['t2m_anom'], 
+                          surface['ice'],
                           input_core_dims=[['z'], ['z']],
                           output_core_dims=[["parameter"]],
                           vectorize=True,
@@ -122,9 +145,9 @@ dataset.Reference = "Ryan, J. C., (unpublished)"
 dataset.Contact = "jryan4@uoregon.edu"
     
 # Create new dimensions
-lat_dim = dataset.createDimension('y', xr_stats_temp.shape[0])
-lon_dim = dataset.createDimension('x', xr_stats_temp.shape[1])
-data_dim =  dataset.createDimension('z', xr_stats_temp.shape[2])
+lat_dim = dataset.createDimension('y', xr_stats_surf.shape[0])
+lon_dim = dataset.createDimension('x', xr_stats_surf.shape[1])
+data_dim =  dataset.createDimension('z', xr_stats_surf.shape[2])
 
 # Define variable types
 Y = dataset.createVariable('latitude', np.float32, ('y','x'))
@@ -135,18 +158,22 @@ Y.units = "degrees"
 X.units = "degrees"
    
 # Create the actual 3D variable
-xr_stats_temp_nc = dataset.createVariable('bulk_vs_temp', np.float32, ('y','x','z'))
-xr_stats_cloud_nc = dataset.createVariable('bulk_vs_cloud', np.float32, ('y','x','z'))
+xr_stats_surf_nc = dataset.createVariable('surface_feedback', np.float32, ('y','x','z'))
+xr_stats_lw_nc = dataset.createVariable('cloud_lw_feedback', np.float32, ('y','x','z'))
+xr_stats_sw_nc = dataset.createVariable('cloud_sw_feedback', np.float32, ('y','x','z'))
+xr_stats_net_nc = dataset.createVariable('cloud_net_feedback', np.float32, ('y','x','z'))
 
-xr_stats_snowline_nc = dataset.createVariable('snowline', np.float32, ('y','x','z'))
-xr_stats_snow_nc = dataset.createVariable('snow', np.float32, ('y','x','z'))
-xr_stats_ice_nc = dataset.createVariable('ice', np.float32, ('y','x','z'))
+xr_stats_snowline_nc = dataset.createVariable('snowline_feedback', np.float32, ('y','x','z'))
+xr_stats_snow_nc = dataset.createVariable('snow_feedback', np.float32, ('y','x','z'))
+xr_stats_ice_nc = dataset.createVariable('ice_feedback', np.float32, ('y','x','z'))
 
 # Write data to layers
 Y[:] = ismip_1km['lat'].values
 X[:] = ismip_1km['lon'].values
-xr_stats_temp_nc[:] = xr_stats_temp.values
-xr_stats_cloud_nc[:] = xr_stats_cloud.values
+xr_stats_surf_nc[:] = xr_stats_surf.values
+xr_stats_lw_nc[:] = xr_stats_lw.values
+xr_stats_sw_nc[:] = xr_stats_sw.values
+xr_stats_net_nc[:] = xr_stats_net.values
 xr_stats_snowline_nc[:] = xr_stats_snowline.values
 xr_stats_snow_nc[:] = xr_stats_snow.values
 xr_stats_ice_nc[:] = xr_stats_ice.values
@@ -156,13 +183,19 @@ print('Writing data to %s' % path + 'feedback-stats.nc')
 # Close dataset
 dataset.close()
 
+#%%
+
+# Checks
+xr_stats_sw_sig = xr_stats_sw.copy()
+xr_stats_sw_sig = xr_stats_sw_sig.where(xr_stats_sw_sig[:,:,3] < 0.01)
+c_mask_sw = np.isfinite(xr_stats_sw_sig[:,:,0]).values
+c_mask_sw[mask == False] = False
 
 
 
+plt.scatter(t2m['t2m_anom'][2568,633,:], cloud['swnet_anom'][2568,633,:])
 
-
-
-
+plt.scatter(t2m['t2m_anom'][2568,633,:], cloud['swnet_diff'][2568,633,:])
 
 
 
