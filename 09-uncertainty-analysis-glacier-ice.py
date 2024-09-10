@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Compute SWnet for five experiments.
+Compute uncertainty due to fixed threshold value of glacier ice albedo.
 
 """
 

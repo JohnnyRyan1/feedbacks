@@ -16,7 +16,7 @@ import netCDF4
 #%%
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -47,6 +47,34 @@ i = 55
 
 # Define albedo uncertainty
 j = 0
+
+#%%
+
+"""
+OPTIONAL
+"""
+
+mean_albedo = []
+for f in range(len(modis_files)):
+
+    print('Processing... %s' % f)
+    
+    # Import albedo data
+    modis = xr.open_dataset(modis_files[f])
+
+    # Some preprocessing
+    albedo = modis['albedo'].values.astype(np.float32)
+    albedo[mask3d == 0] = np.nan
+    albedo[albedo == 0] = np.nan
+            
+    # Add max snow albedo
+    albedo[albedo > 84] = 84
+    albedo[albedo <= 30] = 30
+    
+    # Mean albedo
+    mean_albedo.append(np.nanmean(np.nanmean(albedo, axis=2)))
+
+print(np.mean(mean_albedo))
 
 #%%
 

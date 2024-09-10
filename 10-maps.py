@@ -19,7 +19,7 @@ import matplotlib.ticker as tkr
 #%%
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -67,7 +67,7 @@ ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
 cbar = plt.colorbar(ticks=np.arange(0, 80, 10))
 cbar.ax.set_yticklabels(np.arange(0, 80, 10)) 
 cbar.set_label('Radiative forcing  (W m$^{-2}$)', rotation=270, labelpad=12)
-plt.savefig(savepath + 'snowline.png', dpi=200)
+plt.savefig(savepath + 'snowline.png', dpi=300)
 
 
 #%%
@@ -90,7 +90,7 @@ ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
 cbar = plt.colorbar(ticks=np.arange(0, 80, 10))
 cbar.ax.set_yticklabels(np.arange(0, 80, 10)) 
 cbar.set_label('Radiative forcing (W m$^{-2}$)', rotation=270, labelpad=12)
-plt.savefig(savepath + 'ice.png', dpi=200)
+plt.savefig(savepath + 'ice.png', dpi=300)
 
 #%%
 snow_data = np.nanmean(s_forcing['snow'], axis=2)
@@ -111,7 +111,7 @@ ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
 cbar = plt.colorbar(ticks=np.arange(0, 80, 10))
 cbar.ax.set_yticklabels(np.arange(0, 80, 10)) 
 cbar.set_label('Radiative forcing  (W m$^{-2}$)', rotation=270, labelpad=12)
-plt.savefig(savepath + 'snow.png', dpi=200)
+plt.savefig(savepath + 'snow.png', dpi=300)
 
 #%%
 
@@ -138,7 +138,7 @@ ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
 cbar = plt.colorbar(ticks=np.arange(-30, 80, 10))
 cbar.ax.set_yticklabels(np.arange(-30, 80, 10)) 
 cbar.set_label('Radiative forcing  (W m$^{-2}$)', rotation=270, labelpad=12)
-plt.savefig(savepath + 'clouds.png', dpi=200)
+plt.savefig(savepath + 'clouds.png', dpi=300)
 
 
 #%%
@@ -164,7 +164,7 @@ ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
 cbar = plt.colorbar(ticks=np.arange(-5, 25, 5))
 cbar.ax.set_yticklabels(np.arange(-5, 25, 5)) 
 cbar.set_label('Radiative feedback  (W m$^{-2}$ K$^{-1}$)', rotation=270, labelpad=12)
-plt.savefig(savepath + 'surface-feedback-slope.png', dpi=200)
+plt.savefig(savepath + 'surface-feedback-slope.png', dpi=300)
 
 #%%
 
@@ -184,7 +184,7 @@ plt.contourf(lons, lats, p, transform=ccrs.PlateCarree(),
 ax.coastlines(resolution='50m', color='black', linewidth=0.5)
 ax.add_feature(cfeature.LAND, facecolor='antiquewhite', zorder=2)
 ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
-plt.savefig(savepath + 'surface-feedback-sig.png', dpi=200)
+plt.savefig(savepath + 'surface-feedback-sig.png', dpi=300)
 
 
 #%%
@@ -205,7 +205,7 @@ plt.contourf(lons, lats, p, transform=ccrs.PlateCarree(),
 ax.coastlines(resolution='50m', color='black', linewidth=0.5)
 ax.add_feature(cfeature.LAND, facecolor='antiquewhite', zorder=2)
 ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)
-plt.savefig(savepath + 'cloud-feedback-sig.png', dpi=200)
+plt.savefig(savepath + 'cloud-feedback-sig.png', dpi=300)
 
 
 #%%
@@ -229,7 +229,7 @@ cbar = plt.colorbar(ticks=np.arange(-1, 0.1, 0.2))
 cbar.ax.set_yticklabels(np.arange(-1, 0.1, 0.2)) 
 cbar.ax.yaxis.set_major_formatter(tkr.FormatStrFormatter('%.1f'))
 cbar.set_label('Correlation with elevation', rotation=270, labelpad=12)
-plt.savefig(savepath + 'downscale-t2m-correlations.png', dpi=200)
+plt.savefig(savepath + 'downscale-t2m-correlations.png', dpi=300)
 
 #%%
 swd_allsky_r = np.nanmean(c_forcing_lw['swd_allsky_r'], axis=2)
@@ -253,7 +253,7 @@ cbar = plt.colorbar(ticks=np.arange(-1, 1.2, 0.4))
 cbar.ax.set_yticklabels(np.arange(-1, 1.2, 0.4)) 
 cbar.ax.yaxis.set_major_formatter(tkr.FormatStrFormatter('%.1f'))
 cbar.set_label('Correlation with elevation', rotation=270, labelpad=12)
-plt.savefig(savepath + 'downscale-swd-allsky-correlations.png', dpi=200)
+plt.savefig(savepath + 'downscale-swd-allsky-correlations.png', dpi=300)
 
 
 #%%
@@ -276,7 +276,7 @@ cbar = plt.colorbar(ticks=np.arange(-1, 0.1, 0.2))
 cbar.ax.set_yticklabels(np.arange(-1, 0.1, 0.2)) 
 cbar.ax.yaxis.set_major_formatter(tkr.FormatStrFormatter('%.1f'))
 cbar.set_label('Correlation with elevation', rotation=270, labelpad=12)
-plt.savefig(savepath + 'downscale-lwd-allsky-correlations.png', dpi=200)
+plt.savefig(savepath + 'downscale-lwd-allsky-correlations.png', dpi=300)
 
 #%%
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Compute SWnet for clouds experiments
+Compute uncertainty of clouds.
 
 """
 

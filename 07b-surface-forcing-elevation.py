@@ -15,11 +15,11 @@ import matplotlib.pyplot as plt
 #%%
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
-savepath = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/figures/'
+savepath = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/feedbacks/re-revision/'
 
 #%%
 
@@ -70,7 +70,7 @@ snow_std = np.array(snow_std)
 df = pd.DataFrame(list(zip(ice, snowline, snow)))
 df.columns = ['ice', 'snowline', 'snow']
 df['bulk'] = df['ice'] + df['snowline'] + df['snow']
-df.to_csv(path + 'radiative-forcing-elevation.csv', index=False)
+#df.to_csv(path + 'radiative-forcing-elevation.csv', index=False)
 
 #%%
 
@@ -96,7 +96,7 @@ coeffs['ice_gt_std'] = coeffs['ice_std']/1e+06*area*92
 coeffs['snowline_gt_std'] = coeffs['snowline_std']/1e+06*area*92
 coeffs['snow_gt_std'] = coeffs['snow_std']/1e+06*area*92
 
-coeffs.to_csv(path + 'final-coeffs.csv')
+#coeffs.to_csv(path + 'final-coeffs.csv')
 #%%
 
 fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(nrows=2, ncols=3, figsize=(16, 10))
@@ -134,7 +134,6 @@ ax3.fill_betweenx(elevations[:-1],
                  coeffs['ice_gt']+coeffs['snowline_gt']+coeffs['snow_gt']-
                  (coeffs['ice_gt_std']+coeffs['snowline_gt_std']+coeffs['snow_gt_std']),
                  zorder=1, color=c4, alpha=0.2)
-ax3.legend(fontsize=13)
 ax3.set_yticklabels([])
 ax3.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax3.set_xlim(0, 8.5)
@@ -184,7 +183,7 @@ ax6.set_yticklabels([])
 
 ax1.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
 ax2.set_xlabel('Ice sheet area (km$^2$)', fontsize=14)
-ax3.set_xlabel('Meltwater melt (Gt yr$^{-1}$)', fontsize=14)
+ax3.set_xlabel('Meltwater production (Gt yr$^{-1}$)', fontsize=14)
 ax4.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
 ax5.set_xlabel('Meltwater production (mm w.e. d$^{-1}$)', fontsize=14)
 ax6.set_xlabel('Meltwater production (Gt yr$^{-1}$)', fontsize=14)
@@ -204,7 +203,12 @@ ax4.text(0.03, 0.89, "d", fontsize=24, transform=ax4.transAxes)
 ax5.text(0.03, 0.89, "e", fontsize=24, transform=ax5.transAxes)
 ax6.text(0.03, 0.89, "f", fontsize=24, transform=ax6.transAxes)
 
-fig.savefig(savepath + 'radiative-forcing-elevation.png', dpi=200)
+ax1.set_xlim(0, 100)
+ax4.set_xlim(0, 100)
+ax3.set_xlim(0, 8.6)
+ax6.set_xlim(0, 8.6)
+
+fig.savefig(savepath + 'fig2.png', dpi=300)
 
 
 #%%
@@ -341,6 +345,94 @@ all_gt = np.sum(coeffs['ice_gt']) + np.sum(coeffs['snowline_gt']) + np.sum(coeff
 all_gt_max = np.sum(coeffs['ice_gt_max']) + np.sum(coeffs['snowline_gt_max']) + np.sum(coeffs['snow_gt_max'])
 
 
+#%%
+
+fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(nrows=2, ncols=3, figsize=(16, 10))
+
+# Define colour map
+c1 = '#E05861'
+c2 = '#616E96'
+c3 = '#F8A557'
+c4 = '#3CBEDD'
+
+ax1.plot(ice+snowline+snow, elevations[:-1], color=c4, zorder=2, lw=2, 
+         alpha=0.8, label='Surface radiative forcing')
+ax1.fill_betweenx(elevations[:-1],
+                 ice+snowline+snow+ice_std+snowline_std+snow_std,
+                 ice+snowline+snow-(ice_std+snowline_std+snow_std),
+                 zorder=1, color=c4, alpha=0.2)
+ax1.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
+ax1.legend(fontsize=13)
+ax1.set_xlim(0, 100)
+
+ax2.barh(range(len(area)), area, align='edge',  alpha=0.4, color=c4, edgecolor='k')
+ax2.set_ylim(0,17)
+ax2.grid(linestyle='dotted', lw=1, zorder=1)
+ax2.tick_params(axis='both', which='major', labelsize=13)
+ax2.set_yticklabels([])
+
+#ax3.plot(coeffs['melt_gt'], elevations[:-1], color=c4, zorder=2, 
+#         lw=2, alpha=0.8, label='Total')
+ax3.plot(coeffs['ice_gt']+coeffs['snowline_gt']+coeffs['snow_gt'], 
+         elevations[:-1], color=c4, zorder=2, 
+         lw=2, alpha=0.8, label='')
+ax3.fill_betweenx(elevations[:-1],
+                 coeffs['ice_gt']+coeffs['snowline_gt']+coeffs['snow_gt']+
+                 coeffs['ice_gt_std']+coeffs['snowline_gt_std']+coeffs['snow_gt_std'],
+                 coeffs['ice_gt']+coeffs['snowline_gt']+coeffs['snow_gt']-
+                 (coeffs['ice_gt_std']+coeffs['snowline_gt_std']+coeffs['snow_gt_std']),
+                 zorder=1, color=c4, alpha=0.2)
+ax3.legend(fontsize=13)
+ax3.set_yticklabels([])
+ax3.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
+ax3.set_xlim(0, 8.5)
+
+ax4.plot(snowline, elevations[:-1], color=c2, lw=2, zorder=2, alpha=0.8, label='Snowline')
+ax4.fill_betweenx(elevations[:-1], snowline+snowline_std, snowline-snowline_std, color=c2, zorder=1, alpha=0.2)
+ax4.set_xlim(0, 60)
+ax4.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
+ax4.legend(fontsize=13)
+
+ax5.plot(coeffs['snowline'], elevations[:-1], color=c2, 
+         lw=2, zorder=2, alpha=0.8, label='Snowline')
+ax5.fill_betweenx(elevations[:-1], coeffs['snowline']+coeffs['snowline_std'], 
+                  coeffs['snowline']-coeffs['snowline_std'], color=c2, zorder=1, alpha=0.2)
+ax5.set_xlim(0, 2.3)
+ax5.set_yticklabels([])
+ax5.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
+
+ax6.plot(coeffs['snowline_gt'], elevations[:-1], color=c2, 
+         lw=2, zorder=2, alpha=0.8, label='Snowline')
+ax6.fill_betweenx(elevations[:-1], coeffs['snowline_gt']+coeffs['snowline_gt_std'], 
+                  coeffs['snowline_gt']-coeffs['snowline_gt_std'], color=c2, zorder=1, alpha=0.2)
+ax6.set_xlim(0, 4)
+ax6.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
+ax6.set_yticklabels([])
+
+
+ax1.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
+ax2.set_xlabel('Ice sheet area (km$^2$)', fontsize=14)
+ax3.set_xlabel('Meltwater melt (Gt yr$^{-1}$)', fontsize=14)
+ax4.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
+ax5.set_xlabel('Meltwater production (mm w.e. d$^{-1}$)', fontsize=14)
+ax6.set_xlabel('Meltwater production (Gt yr$^{-1}$)', fontsize=14)
+
+ax1.set_ylabel('Elevation (m a.s.l.)', fontsize=14)
+ax4.set_ylabel('Elevation (m a.s.l.)', fontsize=14)
+
+for ax in [ax1, ax3, ax4, ax5, ax6]:
+    ax.grid(linestyle='dotted', lw=1, zorder=1)
+    ax.tick_params(axis='both', which='major', labelsize=13)
+    ax.set_ylim(0, 3400)
+
+ax1.text(0.03, 0.89, "a", fontsize=24, transform=ax1.transAxes)
+ax2.text(0.03, 0.87, "b", fontsize=24, transform=ax2.transAxes)
+ax3.text(0.03, 0.89, "c", fontsize=24, transform=ax3.transAxes)
+ax4.text(0.03, 0.89, "d", fontsize=24, transform=ax4.transAxes)
+ax5.text(0.03, 0.89, "e", fontsize=24, transform=ax5.transAxes)
+ax6.text(0.03, 0.89, "f", fontsize=24, transform=ax6.transAxes)
+
+#fig.savefig(savepath + 'radiative-forcing-snowline.png', dpi=200)
 
 
 

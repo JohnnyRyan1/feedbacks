@@ -4,7 +4,7 @@
 
 DESCRIPTION
 
-1. Correct clear-sky albedo to all-sky using Key et al. (2001) approach/
+1. Correct clear-sky albedo to all-sky using Key et al. (2001) approach.
 
 """
 

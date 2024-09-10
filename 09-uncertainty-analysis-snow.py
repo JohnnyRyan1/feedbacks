@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Compute SWnet for five experiments.
+Compute uncertainty due the use of fixed threshold values.
 
 """
 

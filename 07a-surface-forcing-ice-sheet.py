@@ -13,7 +13,7 @@ import pandas as pd
 #%%
 
 # Define user
-user = 'johnnyryan'
+user = 'jryan4'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
