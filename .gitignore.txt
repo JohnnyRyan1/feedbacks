@@ -1,4 +1,0 @@
-*old/
-*.DS_Store
-*temp-files/
-*.ipynb-checkpoints/
