@@ -15,7 +15,7 @@ import pandas as pd
 #%%
 
 # Define user
-user = 'jryan4'
+user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
@@ -155,6 +155,7 @@ coeffs['bulk_net'] = coeffs['factor'] * bulk_net
 coeffs['bulk_net_std'] = coeffs['factor'] * bulk_lw_std
 coeffs['bulk_net_gt'] = coeffs['bulk_net'] / 1e+06 * area * 92
 coeffs['bulk_net_gt_std'] = coeffs['bulk_net_std'] / 1e+06 * area * 92
+
 #%%
 
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
@@ -201,7 +202,6 @@ ax2.fill_betweenx(elevations[:-1],
 ax2.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax2.set_ylim(0, 3400)
 ax2.axvline(x=0, ls='dashed', color='k', zorder=1, alpha=0.5)
-#ax2.legend(fontsize=13)
 ax2.set_yticklabels([])
 
 ax3.plot(bulk_sw, elevations[:-1], color=c2, zorder=2, alpha=0.8, label='SW')
@@ -220,8 +220,6 @@ ax3.fill_betweenx(elevations[:-1],
 ax3.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax3.axvline(x=0, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax3.set_ylim(0, 3400)
-ax3.legend(fontsize=13)
-ax3.legend(fontsize=13, loc=1)
 
 
 ax4.plot(coeffs['bulk_sw_gt'], elevations[:-1], color=c2, zorder=2, 
@@ -242,7 +240,6 @@ ax4.fill_betweenx(elevations[:-1],
 ax4.axvline(x=0, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax4.axhline(y=1600, ls='dashed', color='k', zorder=1, alpha=0.5)
 ax4.set_ylim(0, 3400)
-ax4.legend(fontsize=13)
 ax4.set_yticklabels([])
 
 ax1.set_xlabel('Radiative forcing (W m$^{-2}$)', fontsize=14)
@@ -262,7 +259,7 @@ ax2.text(0.03, 0.87, "b", fontsize=24, transform=ax2.transAxes)
 ax3.text(0.03, 0.89, "c", fontsize=24, transform=ax3.transAxes)
 ax4.text(0.03, 0.89, "d", fontsize=24, transform=ax4.transAxes)
 
-fig.savefig(savepath + 'cloud-radiative-forcing.png', dpi=200)
+fig.savefig(savepath + 'cloud-radiative-forcing.png', dpi=300)
 
 
 #%%

@@ -23,7 +23,7 @@ user = 'johnnyryan'
 
 # Define path
 path = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/data/'
-savepath = '/Users/' + user + '/Dropbox (University of Oregon)/research/feedbacks/figures/'
+savepath = '/Users/' + user + '/Library/CloudStorage/OneDrive-DukeUniversity/research/feedbacks/re-revision/figures/'
 
 #%%
 # Import data
@@ -131,7 +131,7 @@ fig = plt.figure(figsize=(4, 4))
 v = np.arange(-30, 75, 1)
 ax = plt.axes(projection=ccrs.NorthPolarStereo(central_longitude=-45))
 plt.contourf(lons, lats, net_cloud, v, transform=ccrs.PlateCarree(), vmin=-30, vmax=75,
-             cmap='coolwarm', zorder=3, norm=divnorm)
+             cmap='RdBu_r', zorder=3, norm=divnorm)
 ax.coastlines(resolution='50m', color='black', linewidth=0.5)
 ax.add_feature(cfeature.LAND, facecolor='antiquewhite', zorder=2)
 ax.add_feature(cfeature.OCEAN,facecolor='white', zorder=1)

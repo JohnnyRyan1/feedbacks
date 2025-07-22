@@ -8,6 +8,7 @@ Compare MAR vs. downscaled MERRA-2.
 
 # Import modules
 import xarray as xr
+import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -26,18 +27,37 @@ mask = ismip_1km['GIMP'].values
 
 #%%
 
-mar = xr.open_dataset(mar_path + 'MARv3.12.1-10km-daily-ERA5-2019.nc')
+mar_files = sorted(glob.glob(mar_path + '*.nc'))[2:]
 merra = xr.open_dataset(path + 'allwave-t2m-downscaled.nc')
 
 
 #%%
 
-mar_mean = mar['LWD'][151:243, :, :].mean(axis=0)
+mar_swd = []
+mar_lwd = []
 
-merra_mean_lwd = merra['lwd_allsky'][:,:,17]
-merra_mean_swd = merra['swd_allsky'][:,:,17]
+for f in mar_files:
+    mar = xr.open_dataset(f)
+    mar_lwd_mean = mar['LWD'][151:243, :, :].mean(axis=0).values
+    mar_swd_mean = mar['SWD'][151:243, :, :].mean(axis=0).values
+    mar_lwd.append(np.nanmean(mar_lwd_mean[mar['MSK'] > 99]))
+    mar_swd.append(np.nanmean(mar_swd_mean[mar['MSK'] > 99]))
 
-mask = mar['MSK'] > 99
+
+#%%
+
+
+merra_lwd = np.mean(merra['lwd_allsky'][:,:,0:20], axis=(0,1))
+merra_swd = np.mean(merra['swd_allsky'][:,:,0:20], axis=(0,1))
+
+#%%
+
+plt.scatter(mar_swd, merra_swd)
+
+#%%
+
+plt.scatter(mar_lwd, merra_lwd)
+
 
 #%%
 
